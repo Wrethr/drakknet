@@ -1,9 +1,9 @@
 #include "drakknet.h"
-#include <winerror.h>
-#include <winsock2.h>
 
 #if defined(_WIN32)
     #include <windows.h>
+    #include <winerror.h>
+    #include <winsock2.h>
     #pragma comment(lib, "ws2_32.lib")
 #else
     #include <unistd.h>   /* close() */
