@@ -1,5 +1,8 @@
 #include "drakknet.h"
 
+#include <stdlib.h>
+#include <string.h>   /* memset */
+
 #if defined(_WIN32)
     #include <windows.h>
     #include <winerror.h>
@@ -8,7 +11,6 @@
 #else
     #include <unistd.h>   /* close() */
     #include <errno.h>
-    #include <string.h>   /* memset */
 #endif
 
 // init flag
