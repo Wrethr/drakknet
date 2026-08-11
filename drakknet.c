@@ -21,7 +21,7 @@ static int is_wouldblock_error(void) {
 #if defined(_WIN32)
     return WSAGetLastError() == WSAEWOULDBLOCK;
 #else
-    return errno == EWOULDBLOCK || errno == EAGAIN;
+    return errno == EWOULDBLOCK || errno == EAGAIN || errno == EINPROGRESS; // errno == EINPROGRESS - connect()
 #endif
 }
 
