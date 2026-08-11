@@ -122,9 +122,23 @@ drakknet_error_t drakknet_addr_from_combined_string(const char* combined, drakkn
         return DRAKKNET_ERR_INVALID_ARG;
     }
 
+    const char* ip_start = combined;
     const char* last_colon = strrchr(combined, ':');
     if (last_colon == NULL) {
         return DRAKKNET_ERR_INVALID_ARG;
+    }
+
+    if (combined[0] == '[') {
+        const char* last_bracket = strrchr(combined, ']');
+        if (last_bracket == NULL || last_bracket > last_colon) {
+            return DRAKKNET_ERR_INVALID_ARG;
+        } 
+
+        ip_start = combined + 1; 
+        last_colon = strrchr(last_bracket, ':');
+        if (last_colon == NULL) {
+            return DRAKKNET_ERR_INVALID_ARG;
+        }
     }
 
     char* endptr;
@@ -133,12 +147,19 @@ drakknet_error_t drakknet_addr_from_combined_string(const char* combined, drakkn
         return DRAKKNET_ERR_INVALID_ARG;
     }
 
-    size_t ip_len = (size_t)(last_colon - combined);
-    if (ip_len >= 64) { // IPV6 AND IPV4 SHORTER
+    size_t ip_len = (size_t)(last_colon - ip_start);
+    
+    // so as not to count ']'
+    if (combined[0] == '[') {
+        if (ip_len == 0) return DRAKKNET_ERR_INVALID_ARG;
+        ip_len--;
+    }
+
+    if (ip_len >= 64 || ip_len == 0) { // IPV6 AND IPV4 SHORTER THEN 64
         return DRAKKNET_ERR_INVALID_ARG;
     }
     char ip_buf[64];
-    memcpy(ip_buf, combined, ip_len);
+    memcpy(ip_buf, ip_start, ip_len);
     ip_buf[ip_len] = '\0';
 
     return drakknet_addr_from_string(ip_buf, (unsigned short)port_val, out_addr);
