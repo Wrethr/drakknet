@@ -217,11 +217,17 @@ drakknet_error_t drakknet_send(drakknet_socket_t sock, const void* buf, size_t l
 #if defined(_WIN32)
     int result = send(sock.handle, (const char*)buf, (int)len, flags);
     if (result == SOCKET_ERROR) {
+        if (is_wouldblock_error()) {
+            return DRAKKNET_ERR_WOULDBLOCK;
+        }
         return DRAKKNET_ERR_SEND;
     }
 #else
     ssize_t result = send(sock.handle, buf, len, flags);
     if (result == -1) {
+        if (is_wouldblock_error()) {
+            return DRAKKNET_ERR_WOULDBLOCK;
+        }
         return DRAKKNET_ERR_SEND;
     }
 #endif
